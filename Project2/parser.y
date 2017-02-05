@@ -45,6 +45,8 @@ void yyerror(const char *msg); // standard error-handling routine
     char identifier[MaxIdentLen+1]; // +1 for terminating null
     Decl *decl;
     List<Decl*> *declList;
+    Type *type;
+    Expr *expr;
 }
 
 
@@ -54,7 +56,7 @@ void yyerror(const char *msg); // standard error-handling routine
  * Bison will assign unique numbers to these and export the #define
  * in the generated y.tab.h header file.
  */
-%token   T_Void T_Bool T_Int T_Float
+%token   T_Void T_Bool T_Int T_Float //done
 %token   T_LessEqual T_GreaterEqual T_EQ T_NE T_LeftAngle T_RightAngle
 %token   T_And T_Or
 %token   T_Equal T_MulAssign T_DivAssign T_AddAssign T_SubAssign
@@ -62,8 +64,8 @@ void yyerror(const char *msg); // standard error-handling routine
 %token   T_Const T_Uniform T_Layout T_Continue T_Do
 %token   T_Inc T_Dec T_Switch T_Case T_Default
 %token   T_In T_Out T_InOut
-%token   T_Mat2 T_Mat3 T_Mat4 T_Vec2 T_Vec3 T_Vec4
-%token   T_Ivec2 T_Ivec3 T_Ivec4 T_Bvec2 T_Bvec3 T_Bvec4
+%token   T_Mat2 T_Mat3 T_Mat4 T_Vec2 T_Vec3 T_Vec4 //done
+%token   T_Ivec2 T_Ivec3 T_Ivec4 T_Bvec2 T_Bvec3 T_Bvec4 //done
 %token   T_Uint T_Uvec2 T_Uvec3 T_Uvec4 T_Struct
 %token   T_Semicolon T_Dot T_Colon T_Question T_Comma
 %token   T_Dash T_Plus T_Star T_Slash
@@ -87,7 +89,11 @@ void yyerror(const char *msg); // standard error-handling routine
  */
 %type <declList>  DeclList
 %type <decl>      Decl
-
+%type <type>      type_specifier
+%type <type>      type_specifier_nonarray
+%type <type>      array_specifier
+%type <expr>      constant_expression
+%type <expr>      conditional_expression
 
 
 %%
@@ -120,7 +126,41 @@ Decl      :    T_Int T_Identifier T_Semicolon {
                                               }
           ;
 
+type_specifier  :   type_specifier_nonarray                   { $$ = $1; }
+                  | type_specifier_nonarray array_specifier   { $$ = new ArrayType(@1, $1); }   
 
+type_specifier_nonarray  :  T_Void  { $$ = Type::voidType; } 
+                          | T_Bool  { $$ = Type::boolType; }
+                          | T_Float { $$ = Type::floatType; }
+                          | T_Int   { $$ = Type::intType; }
+                          | T_Uint  { $$ = Type::UintType; }
+                          | T_Bvec2 { $$ = Type::bvec2Type; }
+                          | T_Bvec3 { $$ = Type::bvec3Type; }
+                          | T_Bvec4 { $$ = Type::bvec4Type; }
+                          | T_Ivec2 { $$ = Type::ivec2Type; }
+                          | T_Ivec3 { $$ = Type::ivec3Type; }
+                          | T_Ivec4 { $$ = Type::ivec4Type; }
+                          | T_Uvec2 { $$ = Type::uvec2Type; }
+                          | T_Uvec3 { $$ = Type::uvec3Type; }
+                          | T_Uvec4 { $$ = Type::uvec4Type; }
+                          | T_Vec2  { $$ = Type::vec2Type; }
+                          | T_Vec3  { $$ = Type::vec3Type; }
+                          | T_Vec4  { $$ = Type::vec4Type; }
+                          | T_Mat2  { $$ = Type::mat2Type; }
+                          | T_Mat3  { $$ = Type::mat3Type; }
+                          | T_Mat4  { $$ = Type::mat4Type; } 
+                        ;
+
+array_specifier   :   T_LeftBracket constant_expression T_RightBracket  {}
+                  ;
+
+constant_expression   :   conditional_expression  { $$ = $1; }
+                      ;
+
+conditional_expression    :   logical_or_expression   { $$ = $1; }
+                            | logical_or_expression T_Question expression T_Colon assignment_expression 
+                                                      { $$ = new SelectionExpr($1, $3, $5); }
+                          ;
 %%
 
 /* The closing %% above marks the end of the Rules section and the beginning
@@ -145,5 +185,5 @@ Decl      :    T_Int T_Identifier T_Semicolon {
 void InitParser()
 {
    PrintDebug("parser", "Initializing parser");
-   yydebug = false;
+   yydebug = true;
 }
