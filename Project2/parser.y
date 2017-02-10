@@ -92,6 +92,8 @@ void yyerror(const char *msg); // standard error-handling routine
 %type <type>      type_specifier
 %type <type>      type_specifier_nonarray
 %type <type>      array_specifier
+%type <expr>      primary_expression
+%type <expr>      expression
 %type <expr>      constant_expression
 %type <expr>      conditional_expression
 
@@ -119,15 +121,184 @@ DeclList  :    DeclList Decl        { ($$=$1)->Append($2); }
           |    Decl                 { ($$ = new List<Decl*>)->Append($1); }
           ;
 
-Decl      :    T_Int T_Identifier T_Semicolon {
-                                                 // replace it with your implementation
-                                                 Identifier *id = new Identifier(@2, $2);
-                                                 $$ = new VarDecl(id, Type::intType);
-                                              }
+Decl      :    primary_expression { $$ = $1 }
           ;
 
+primary_expression    :   T_Identifier  { Identifier *id = new Identifier(@1, $1); $$ = new VarExpr(@1, id); }
+                      |   T_IntConstant { $$ = new IntConstant(@1, $1); }
+                      |   T_FloatConstant { $$ = new FloatConstant(@1, $1); }
+                      |   T_BoolConstant  { $$ = new FloatConstant(@1, $1); }
+                      |   T_LeftParen expression T_RightParen { $$ = $2; }
+                      ;
+
+postfix_expression    :   primary_expression {$$ = $1;}
+                      |   postfix_expression T_LEFT_BRACKET integer_expression T_RIGHT_BRACKET {$$ = new ArrayAccess(@3,$1,$3);}
+                      |   function_call {$$ = $1;}
+                      |   postfix_expression T_DOT T_Identifier
+                      |   postfix_expression T_Inc
+                      |   postfix_expression T_Dec
+                     ;
+
+integer_expression  : expression  {$$=$1;}
+                    ;
+
+function_call       : function_call_or_method
+                    ;
+
+function_call_or_method: function_call_generic
+                    ;
+
+function_call_generic : function_call_header_with_parameters T_RightParen {$$=$1;}
+                      | function_call_header_no_parameters T_RightParen   {$$=$1;}
+                      ;
+
+function_call_header_no_parameters  : function_call_header T_Void {}
+                                    | function_call_header  {}
+                                    ;
+
+function_call_header  : function_identifier T_LeftParen {}
+                      ;
+
+function_identifier : type_specifier  {}
+                    | postfix_expression {}
+                    ;
+
+
+unary_expression  : postfix_expression  {}
+                  | T_Inc unary_expression {}
+                  | T_Dec unary_expression {}
+                  | unary_operator unary_expression {}
+                  ;
+
+unary_operator  : T_Plus  {}
+                | T_Dash  {}
+                ;
+
+multiplicative_expression : unary_expression  {}
+                          | multiplicative_expression T_Star unary_expression {}
+                          | multiplicative_expression T_Slash unary_expression  {}
+                          ;
+
+additive_expression : multiplicative_expression {}
+                    | additive_expression PLUS multiplicative_expression  {}
+                    | additive_expression DASH multiplicative_expression  {}
+                    ;
+
+shift_expression  : additive_expression {}
+                  ;
+
+relational_expression : shift_expression  {}
+                      | relational_expression T_LeftAngle shift_expression {}
+                      | relational_expression T_RightAngle shift_expression  {}
+                      | relational_expression T_LessEqual shift_expression  {}
+                      | relational_expression T_GreaterEqual shift_expression  {}
+                      ;
+
+equality_expression : relational_expression {}
+                    | equality_expression T_EQ relational_expression {}
+                    | equality_expression T_NE relational_expression {}
+                    ;
+
+
+and_expression  : equality_expression {}
+                ;
+
+
+exclusive_or_expression : and_expression  {}
+                        ;
+
+inclusive_or_expression : exclusive_or_expression {}
+                        ;
+
+logical_and_expression  : inclusive_or_expression   {}
+                        | logical_and_expression T_And inclusive_or_expression    {}
+                        ;
+
+logical_xor_expression  : logical_and_expression  {}
+                        ;
+
+logical_or_expression : logical_xor_expression  {}
+                      | logical_or_expression T_Or logical_xor_expression {}
+                      ;
+
+conditional_expression  : logical_or_expression {}
+                        | logical_or_expression T_Question expression T_Colon assignment_expression {}
+                        ;
+
+assignment_expression : conditional_expression  {}
+                      | unary_expression assignment_operator assignment_expression  {}
+                      ;
+
+assignment_operator : T_Equal {$$ = new Operator(@1, "=");}
+                    | T_MulAssign {$$ = new Operator(@1, "*=");}
+                    | T_DivAssign {$$ = new Operator(@1, "/=");}
+                    | T_AddAssign {$$ = new Operator(@1, "+=");}
+                    | T_SubAssign {$$ = new Operator(@1, "-=");}
+                    ;
+
+expression  : assignment_expression {$$=$1;}
+            ;
+constant_expression : conditional_expression  {$$=$1;}
+                    ;
+declaration : function_prototype T_Semicolon  {$$ = $1;}
+            | single_declaration T_Semicolon  {$$ = $1;}
+            | type_qualifier T_Identifier T_Semicolon {}
+            ;
+
+function_prototype  : function_declarator T_RightParen {}
+                    ;
+
+function_declarator : function_header {}
+                    | function_header_with_parameters {}
+                    ;
+
+function_header_with_parameters : function_header parameter_declaration {}
+                                | function_header_with_parameters T_Comma parameter_declaration {}
+                                ;
+
+function_header : fully_specified_type T_Identifier T_LeftParen  {}
+                ;
+
+parameter_declarator  : type_specifier T_Identifier {}
+                      ;
+
+parameter_declaration : parameter_declarator  {}
+                      | parameter_type_specifier  {}
+                      ;
+
+parameter_type_specifier  : type_specifier  {}
+                          ;
+
+init_declarator_list  : single_declaration  {}
+                      ;
+
+single_declaration  : fully_specified_type  {}
+                    | fully_specified_type T_Identifier
+                    | fully_specified_type T_Identifier array_specifier
+                    | fully_specified_type T_Identifier T_Equal initializer 
+                    ;
+
+fully_specified_type  : type_specifier  {}
+                      | type_qualifier type_specifier {}
+                      ;
+
+type_qualifier  : single_type_qualifier {}
+                | type_qualifier single_type_qualifier  {}
+                ;
+
+single_type_qualifier : storage_qualifier {}
+                      ;
+
+storage_qualifier : T_Const {}
+                  | T_In
+                  | T_Out
+                  | T_Uniform
+
 type_specifier  :   type_specifier_nonarray                   { $$ = $1; }
-                  | type_specifier_nonarray array_specifier   { $$ = new ArrayType(@1, $1); }   
+                  | type_specifier_nonarray array_specifier   { $$ = new ArrayType(@1, $1); }  
+
+array_specifier   :   T_LeftBracket constant_expression T_RightBracket  {}
+; 
 
 type_specifier_nonarray  :  T_Void  { $$ = Type::voidType; } 
                           | T_Bool  { $$ = Type::boolType; }
@@ -151,16 +322,105 @@ type_specifier_nonarray  :  T_Void  { $$ = Type::voidType; }
                           | T_Mat4  { $$ = Type::mat4Type; } 
                         ;
 
-array_specifier   :   T_LeftBracket constant_expression T_RightBracket  {}
-                  ;
+initializer : assignment_expression {}
+            ;
 
-constant_expression   :   conditional_expression  { $$ = $1; }
-                      ;
+declaration_statement: declaration {}
+                     ;
 
-conditional_expression    :   logical_or_expression   { $$ = $1; }
-                            | logical_or_expression T_Question expression T_Colon assignment_expression 
-                                                      { $$ = new SelectionExpr($1, $3, $5); }
-                          ;
+statement: compound_statement_with_scope {}
+         | simple_statement {}
+         ;
+
+statement_no_new_scope : compound_statement_no_new_scope {}
+                       | simple_statement {}
+                       ;
+
+statement_with_scope: compound_statement_no_new_scope {}
+                    | simple_statement {}
+                    ;
+
+simple_statement : declaration_statement {}
+                 | expression_statement {}
+                 | selection_statement {}
+                 | switch_statement {}
+                 | case_label {}
+                 | iteration_statement {}
+                 | jump_statement {}
+                 ;
+
+compound_statement_with_scope : T_LeftBrace T_RightBrace {}
+                                | T_LeftBrace statement_list T_RightBrace {}
+                                ;
+
+compound_statement_no_new_scope : T_LeftBrace T_RightBrace {}
+                                | T_LeftBrace statement_list T_RightBrace {}
+                                ;
+
+statement_list: statement {}
+              | statement_list statement {}
+              ;
+
+expression_statement:  T_Semicolon {}
+                    |  expression T_Semicolon {}
+                    ;
+
+selection_statement :  T_If T_LeftParen expression T_RightParen selection_rest_statement {}
+                    ;
+
+selection_rest_statement :  statement_with_scope T_Else statement_with_scope {}
+                         |  statement_with_scope {}
+                         ;
+
+condition:  expression {}
+         |  fully_specified_type T_Identifier T_Equal initializer {}
+         ;
+
+switch_statement: T_Switch T_LeftParen expression T_RightParen T_LeftBrace switch_statement_list T_RightBrace {}
+                ;
+
+switch_statement_list: statment_list {}
+                     ;
+
+case_label : T_Case expression T_Colon {}
+           | T_Default T_Colon {}
+           ;
+
+iteration_statement: T_While T_LeftParen condition T_RightParen statement_no_new_scope {}
+                   | T_Do statement_with_scope T_While T_LeftParen expression T_RightParen T_Semicolon {}
+                   | T_For T_LeftParen for_init_statement_for_rest_statement T_RightParen statement_no_new_scope {}
+                   ;
+
+
+for_init_statement: expression_statement {}
+                  | declaration_statement {}
+                  ;
+
+conditionopt: condition {} 
+            |
+
+for_rest_statement :  conditionopt T_Semicolon {}
+                   |  conditionopt T_Semicolon expression {}
+                   ;
+
+jump_statement: T_Continue T_Semicolon {}
+              | T_Break T_Semicolon {}
+              | T_Return T_Semicolon {}
+              | T_Return expression T_Semicolon {}
+              ;
+
+translation_unit: external_declaration {}
+                | translation_unit external_declaration {}
+                ;
+
+external_declaration: function_definition {}
+                     | declaration {}
+                     ;
+
+
+function_definition : function_prototype compound_statement { }
+                    ;
+
 %%
 
 /* The closing %% above marks the end of the Rules section and the beginning
