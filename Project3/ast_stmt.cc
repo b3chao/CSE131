@@ -41,6 +41,65 @@ void Program::Check() {
       }
     }
 }
+//--------------------------------------------------------------------------------------
+//own fns
+
+void Stmt::Check() {
+  printf("Stmt Check\n");
+  this->Check();
+}
+
+void StmtBlock::Check() {
+  printf("StmtBlock Check\n");
+  if (stmts->NumElements()>0) {
+    for (int i = 0; i<stmts->NumElements();i++) {
+      Stmt * stmt = stmts->Nth(i);
+      stmt->Check();
+    }
+  }
+}
+
+void DeclStmt::Check() {
+  printf("DeclStmt Check\n");
+  this->decl->Check();
+}
+
+
+//TODO type check for test
+void ForStmt::Check() {
+  printf("ForStmt Check\n");
+  if (init != NULL)
+    init->Check();
+
+  if (test != NULL)
+    init->Check();
+
+  if (step != NULL)
+    step->Check();
+
+  if (body != NULL)
+    body->Check();
+}
+
+void WhileStmt::Check() {
+  printf("WhileStmt Check\n");
+  if (test != NULL)
+    test->Check();
+
+  if (body != NULL)
+    body->Check();
+}
+
+void IfStmt::Check() {
+  printf("IfStmt Check\n");
+  if (test != NULL)
+    test->Check();
+
+  if (elseBody != NULL)
+    elseBody->Check();
+}
+
+//-----------------------------------------------------------------------------------------
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {
     Assert(d != NULL && s != NULL);

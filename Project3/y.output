@@ -1,0 +1,3205 @@
+Terminals unused in grammar
+
+   T_Uint
+   T_Bvec2
+   T_Bvec3
+   T_Bvec4
+   T_Ivec2
+   T_Ivec3
+   T_Ivec4
+   T_Uvec2
+   T_Uvec3
+   T_Uvec4
+   T_Do
+   LOWEST
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: DeclList
+
+    2 DeclList: DeclList Decl
+    3         | Decl
+
+    4 Decl: Declaration
+    5     | FuncDecl CompoundStatement
+
+    6 Declaration: FuncDecl T_Semicolon
+    7            | SingleDecl T_Semicolon
+
+    8 FuncDecl: TypeDecl T_Identifier T_LeftParen T_RightParen
+    9         | TypeDecl T_Identifier T_LeftParen ParameterList T_RightParen
+
+   10 ParameterList: SingleDecl
+   11              | ParameterList T_Comma SingleDecl
+
+   12 SingleDecl: TypeDecl T_Identifier
+   13           | TypeQualify TypeDecl T_Identifier
+   14           | TypeDecl T_Identifier T_Equal Initializer
+   15           | TypeQualify TypeDecl T_Identifier T_Equal Initializer
+   16           | TypeDecl T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+   17           | TypeQualify TypeDecl T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+
+   18 Initializer: Expression
+
+   19 TypeQualify: T_In
+   20            | T_Out
+   21            | T_Const
+   22            | T_Uniform
+
+   23 TypeDecl: T_Int
+   24         | T_Void
+   25         | T_Float
+   26         | T_Bool
+   27         | T_Vec2
+   28         | T_Vec3
+   29         | T_Vec4
+   30         | T_Mat2
+   31         | T_Mat3
+   32         | T_Mat4
+
+   33 CompoundStatement: T_LeftBrace T_RightBrace
+   34                  | T_LeftBrace StatementList T_RightBrace
+
+   35 StatementList: Statement
+   36              | StatementList Statement
+
+   37 Statement: CompoundStatement
+   38          | SingleStatement
+
+   39 SingleStatement: T_Semicolon
+   40                | SingleDecl T_Semicolon
+   41                | Expression T_Semicolon
+   42                | SelectionStmt
+   43                | SwitchStmt
+   44                | CaseStmt
+   45                | JumpStmt
+   46                | WhileStmt
+   47                | ForStmt
+
+   48 SelectionStmt: T_If T_LeftParen Expression T_RightParen Statement T_Else Statement
+   49              | T_If T_LeftParen Expression T_RightParen Statement
+
+   50 SwitchStmt: T_Switch T_LeftParen Expression T_RightParen T_LeftBrace StatementList T_RightBrace
+
+   51 CaseStmt: T_Case Expression T_Colon Statement
+   52         | T_Default T_Colon Statement
+
+   53 JumpStmt: T_Break T_Semicolon
+   54         | T_Continue T_Semicolon
+   55         | T_Return T_Semicolon
+   56         | T_Return Expression T_Semicolon
+
+   57 WhileStmt: T_While T_LeftParen Expression T_RightParen Statement
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression T_Semicolon Expression T_RightParen Statement
+
+   59 PrimaryExpr: T_Identifier
+   60            | T_IntConstant
+   61            | T_FloatConstant
+   62            | T_BoolConstant
+   63            | T_LeftParen Expression T_RightParen
+
+   64 FunctionCallExpr: FunctionCallHeaderWithParameters T_RightParen
+   65                 | FunctionCallHeaderNoParameters T_RightParen
+
+   66 FunctionCallHeaderNoParameters: FunctionIdentifier T_LeftParen T_Void
+   67                               | FunctionIdentifier T_LeftParen
+
+   68 FunctionCallHeaderWithParameters: FunctionIdentifier T_LeftParen ArgumentList
+
+   69 ArgumentList: Expression
+   70             | ArgumentList T_Comma Expression
+
+   71 FunctionIdentifier: T_Identifier
+
+   72 PostfixExpr: PrimaryExpr
+   73            | PostfixExpr T_LeftBracket Expression T_RightBracket
+   74            | FunctionCallExpr
+   75            | PostfixExpr T_Inc
+   76            | PostfixExpr T_Dec
+   77            | PostfixExpr T_Dot T_FieldSelection
+
+   78 UnaryExpr: PostfixExpr
+   79          | T_Inc UnaryExpr
+   80          | T_Dec UnaryExpr
+   81          | T_Plus UnaryExpr
+   82          | T_Dash UnaryExpr
+
+   83 MultiExpr: UnaryExpr
+   84          | MultiExpr T_Star UnaryExpr
+   85          | MultiExpr T_Slash UnaryExpr
+
+   86 AdditionExpr: MultiExpr
+   87             | AdditionExpr T_Plus MultiExpr
+   88             | AdditionExpr T_Dash MultiExpr
+
+   89 RelationExpr: AdditionExpr
+   90             | RelationExpr T_LeftAngle AdditionExpr
+   91             | RelationExpr T_RightAngle AdditionExpr
+   92             | RelationExpr T_GreaterEqual AdditionExpr
+   93             | RelationExpr T_LessEqual AdditionExpr
+
+   94 EqualityExpr: RelationExpr
+   95             | EqualityExpr T_EQ RelationExpr
+   96             | EqualityExpr T_NE RelationExpr
+
+   97 LogicAndExpr: EqualityExpr
+   98             | LogicAndExpr T_And EqualityExpr
+
+   99 LogicOrExpr: LogicAndExpr
+  100            | LogicOrExpr T_Or LogicAndExpr
+
+  101 Expression: LogicOrExpr
+  102           | LogicOrExpr T_Question LogicOrExpr T_Colon LogicOrExpr
+  103           | UnaryExpr AssignOp Expression
+
+  104 AssignOp: T_Equal
+  105         | T_AddAssign
+  106         | T_SubAssign
+  107         | T_MulAssign
+  108         | T_DivAssign
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_Void (258) 24 66
+T_Bool (259) 26
+T_Int (260) 23
+T_Float (261) 25
+T_Uint (262)
+T_Bvec2 (263)
+T_Bvec3 (264)
+T_Bvec4 (265)
+T_Ivec2 (266)
+T_Ivec3 (267)
+T_Ivec4 (268)
+T_Uvec2 (269)
+T_Uvec3 (270)
+T_Uvec4 (271)
+T_Vec2 (272) 27
+T_Vec3 (273) 28
+T_Vec4 (274) 29
+T_Mat2 (275) 30
+T_Mat3 (276) 31
+T_Mat4 (277) 32
+T_While (278) 57
+T_For (279) 58
+T_If (280) 48 49
+T_Else (281) 48
+T_Return (282) 55 56
+T_Break (283) 53
+T_Continue (284) 54
+T_Do (285)
+T_Switch (286) 50
+T_Case (287) 51
+T_Default (288) 52
+T_In (289) 19
+T_Out (290) 20
+T_Const (291) 21
+T_Uniform (292) 22
+T_LeftParen (293) 8 9 48 49 50 57 58 63 66 67 68
+T_RightParen (294) 8 9 48 49 50 57 58 63 64 65
+T_LeftBracket (295) 16 17 73
+T_RightBracket (296) 16 17 73
+T_LeftBrace (297) 33 34 50
+T_RightBrace (298) 33 34 50
+T_Dot (299) 77
+T_Comma (300) 11 70
+T_Colon (301) 51 52 102
+T_Semicolon (302) 6 7 39 40 41 53 54 55 56 58
+T_Question (303) 102
+T_LessEqual (304) 93
+T_GreaterEqual (305) 92
+T_EQ (306) 95
+T_NE (307) 96
+T_And (308) 98
+T_Or (309) 100
+T_Plus (310) 81 87
+T_Star (311) 84
+T_MulAssign (312) 107
+T_DivAssign (313) 108
+T_AddAssign (314) 105
+T_SubAssign (315) 106
+T_Equal (316) 14 15 104
+T_LeftAngle (317) 90
+T_RightAngle (318) 91
+T_Dash (319) 82 88
+T_Slash (320) 85
+T_Inc (321) 75 79
+T_Dec (322) 76 80
+T_Identifier (323) 8 9 12 13 14 15 16 17 59 71
+T_IntConstant (324) 16 17 60
+T_FloatConstant (325) 61
+T_BoolConstant (326) 62
+T_FieldSelection (327) 77
+LOWEST (328)
+LOWER_THAN_ELSE (329)
+
+
+Nonterminals, with rules where they appear
+
+$accept (75)
+    on left: 0
+Program (76)
+    on left: 1, on right: 0
+DeclList (77)
+    on left: 2 3, on right: 1 2
+Decl (78)
+    on left: 4 5, on right: 2 3
+Declaration (79)
+    on left: 6 7, on right: 4
+FuncDecl (80)
+    on left: 8 9, on right: 5 6
+ParameterList (81)
+    on left: 10 11, on right: 9 11
+SingleDecl (82)
+    on left: 12 13 14 15 16 17, on right: 7 10 11 40
+Initializer (83)
+    on left: 18, on right: 14 15
+TypeQualify (84)
+    on left: 19 20 21 22, on right: 13 15 17
+TypeDecl (85)
+    on left: 23 24 25 26 27 28 29 30 31 32, on right: 8 9 12 13 14
+    15 16 17
+CompoundStatement (86)
+    on left: 33 34, on right: 5 37
+StatementList (87)
+    on left: 35 36, on right: 34 36 50
+Statement (88)
+    on left: 37 38, on right: 35 36 48 49 51 52 57 58
+SingleStatement (89)
+    on left: 39 40 41 42 43 44 45 46 47, on right: 38
+SelectionStmt (90)
+    on left: 48 49, on right: 42
+SwitchStmt (91)
+    on left: 50, on right: 43
+CaseStmt (92)
+    on left: 51 52, on right: 44
+JumpStmt (93)
+    on left: 53 54 55 56, on right: 45
+WhileStmt (94)
+    on left: 57, on right: 46
+ForStmt (95)
+    on left: 58, on right: 47
+PrimaryExpr (96)
+    on left: 59 60 61 62 63, on right: 72
+FunctionCallExpr (97)
+    on left: 64 65, on right: 74
+FunctionCallHeaderNoParameters (98)
+    on left: 66 67, on right: 65
+FunctionCallHeaderWithParameters (99)
+    on left: 68, on right: 64
+ArgumentList (100)
+    on left: 69 70, on right: 68 70
+FunctionIdentifier (101)
+    on left: 71, on right: 66 67 68
+PostfixExpr (102)
+    on left: 72 73 74 75 76 77, on right: 73 75 76 77 78
+UnaryExpr (103)
+    on left: 78 79 80 81 82, on right: 79 80 81 82 83 84 85 103
+MultiExpr (104)
+    on left: 83 84 85, on right: 84 85 86 87 88
+AdditionExpr (105)
+    on left: 86 87 88, on right: 87 88 89 90 91 92 93
+RelationExpr (106)
+    on left: 89 90 91 92 93, on right: 90 91 92 93 94 95 96
+EqualityExpr (107)
+    on left: 94 95 96, on right: 95 96 97 98
+LogicAndExpr (108)
+    on left: 97 98, on right: 98 99 100
+LogicOrExpr (109)
+    on left: 99 100, on right: 100 101 102
+Expression (110)
+    on left: 101 102 103, on right: 18 41 48 49 50 51 56 57 58 63 69
+    70 73 103
+AssignOp (111)
+    on left: 104 105 106 107 108, on right: 103
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    T_Void     shift, and go to state 1
+    T_Bool     shift, and go to state 2
+    T_Int      shift, and go to state 3
+    T_Float    shift, and go to state 4
+    T_Vec2     shift, and go to state 5
+    T_Vec3     shift, and go to state 6
+    T_Vec4     shift, and go to state 7
+    T_Mat2     shift, and go to state 8
+    T_Mat3     shift, and go to state 9
+    T_Mat4     shift, and go to state 10
+    T_In       shift, and go to state 11
+    T_Out      shift, and go to state 12
+    T_Const    shift, and go to state 13
+    T_Uniform  shift, and go to state 14
+
+    Program      go to state 15
+    DeclList     go to state 16
+    Decl         go to state 17
+    Declaration  go to state 18
+    FuncDecl     go to state 19
+    SingleDecl   go to state 20
+    TypeQualify  go to state 21
+    TypeDecl     go to state 22
+
+
+State 1
+
+   24 TypeDecl: T_Void .
+
+    $default  reduce using rule 24 (TypeDecl)
+
+
+State 2
+
+   26 TypeDecl: T_Bool .
+
+    $default  reduce using rule 26 (TypeDecl)
+
+
+State 3
+
+   23 TypeDecl: T_Int .
+
+    $default  reduce using rule 23 (TypeDecl)
+
+
+State 4
+
+   25 TypeDecl: T_Float .
+
+    $default  reduce using rule 25 (TypeDecl)
+
+
+State 5
+
+   27 TypeDecl: T_Vec2 .
+
+    $default  reduce using rule 27 (TypeDecl)
+
+
+State 6
+
+   28 TypeDecl: T_Vec3 .
+
+    $default  reduce using rule 28 (TypeDecl)
+
+
+State 7
+
+   29 TypeDecl: T_Vec4 .
+
+    $default  reduce using rule 29 (TypeDecl)
+
+
+State 8
+
+   30 TypeDecl: T_Mat2 .
+
+    $default  reduce using rule 30 (TypeDecl)
+
+
+State 9
+
+   31 TypeDecl: T_Mat3 .
+
+    $default  reduce using rule 31 (TypeDecl)
+
+
+State 10
+
+   32 TypeDecl: T_Mat4 .
+
+    $default  reduce using rule 32 (TypeDecl)
+
+
+State 11
+
+   19 TypeQualify: T_In .
+
+    $default  reduce using rule 19 (TypeQualify)
+
+
+State 12
+
+   20 TypeQualify: T_Out .
+
+    $default  reduce using rule 20 (TypeQualify)
+
+
+State 13
+
+   21 TypeQualify: T_Const .
+
+    $default  reduce using rule 21 (TypeQualify)
+
+
+State 14
+
+   22 TypeQualify: T_Uniform .
+
+    $default  reduce using rule 22 (TypeQualify)
+
+
+State 15
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 23
+
+
+State 16
+
+    1 Program: DeclList .
+    2 DeclList: DeclList . Decl
+
+    T_Void     shift, and go to state 1
+    T_Bool     shift, and go to state 2
+    T_Int      shift, and go to state 3
+    T_Float    shift, and go to state 4
+    T_Vec2     shift, and go to state 5
+    T_Vec3     shift, and go to state 6
+    T_Vec4     shift, and go to state 7
+    T_Mat2     shift, and go to state 8
+    T_Mat3     shift, and go to state 9
+    T_Mat4     shift, and go to state 10
+    T_In       shift, and go to state 11
+    T_Out      shift, and go to state 12
+    T_Const    shift, and go to state 13
+    T_Uniform  shift, and go to state 14
+
+    $default  reduce using rule 1 (Program)
+
+    Decl         go to state 24
+    Declaration  go to state 18
+    FuncDecl     go to state 19
+    SingleDecl   go to state 20
+    TypeQualify  go to state 21
+    TypeDecl     go to state 22
+
+
+State 17
+
+    3 DeclList: Decl .
+
+    $default  reduce using rule 3 (DeclList)
+
+
+State 18
+
+    4 Decl: Declaration .
+
+    $default  reduce using rule 4 (Decl)
+
+
+State 19
+
+    5 Decl: FuncDecl . CompoundStatement
+    6 Declaration: FuncDecl . T_Semicolon
+
+    T_LeftBrace  shift, and go to state 25
+    T_Semicolon  shift, and go to state 26
+
+    CompoundStatement  go to state 27
+
+
+State 20
+
+    7 Declaration: SingleDecl . T_Semicolon
+
+    T_Semicolon  shift, and go to state 28
+
+
+State 21
+
+   13 SingleDecl: TypeQualify . TypeDecl T_Identifier
+   15           | TypeQualify . TypeDecl T_Identifier T_Equal Initializer
+   17           | TypeQualify . TypeDecl T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+
+    T_Void   shift, and go to state 1
+    T_Bool   shift, and go to state 2
+    T_Int    shift, and go to state 3
+    T_Float  shift, and go to state 4
+    T_Vec2   shift, and go to state 5
+    T_Vec3   shift, and go to state 6
+    T_Vec4   shift, and go to state 7
+    T_Mat2   shift, and go to state 8
+    T_Mat3   shift, and go to state 9
+    T_Mat4   shift, and go to state 10
+
+    TypeDecl  go to state 29
+
+
+State 22
+
+    8 FuncDecl: TypeDecl . T_Identifier T_LeftParen T_RightParen
+    9         | TypeDecl . T_Identifier T_LeftParen ParameterList T_RightParen
+   12 SingleDecl: TypeDecl . T_Identifier
+   14           | TypeDecl . T_Identifier T_Equal Initializer
+   16           | TypeDecl . T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+
+    T_Identifier  shift, and go to state 30
+
+
+State 23
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 24
+
+    2 DeclList: DeclList Decl .
+
+    $default  reduce using rule 2 (DeclList)
+
+
+State 25
+
+   33 CompoundStatement: T_LeftBrace . T_RightBrace
+   34                  | T_LeftBrace . StatementList T_RightBrace
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_RightBrace     shift, and go to state 41
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    StatementList                     go to state 54
+    Statement                         go to state 55
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 26
+
+    6 Declaration: FuncDecl T_Semicolon .
+
+    $default  reduce using rule 6 (Declaration)
+
+
+State 27
+
+    5 Decl: FuncDecl CompoundStatement .
+
+    $default  reduce using rule 5 (Decl)
+
+
+State 28
+
+    7 Declaration: SingleDecl T_Semicolon .
+
+    $default  reduce using rule 7 (Declaration)
+
+
+State 29
+
+   13 SingleDecl: TypeQualify TypeDecl . T_Identifier
+   15           | TypeQualify TypeDecl . T_Identifier T_Equal Initializer
+   17           | TypeQualify TypeDecl . T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+
+    T_Identifier  shift, and go to state 77
+
+
+State 30
+
+    8 FuncDecl: TypeDecl T_Identifier . T_LeftParen T_RightParen
+    9         | TypeDecl T_Identifier . T_LeftParen ParameterList T_RightParen
+   12 SingleDecl: TypeDecl T_Identifier .
+   14           | TypeDecl T_Identifier . T_Equal Initializer
+   16           | TypeDecl T_Identifier . T_LeftBracket T_IntConstant T_RightBracket
+
+    T_LeftParen    shift, and go to state 78
+    T_LeftBracket  shift, and go to state 79
+    T_Equal        shift, and go to state 80
+
+    $default  reduce using rule 12 (SingleDecl)
+
+
+State 31
+
+   57 WhileStmt: T_While . T_LeftParen Expression T_RightParen Statement
+
+    T_LeftParen  shift, and go to state 81
+
+
+State 32
+
+   58 ForStmt: T_For . T_LeftParen Expression T_Semicolon Expression T_Semicolon Expression T_RightParen Statement
+
+    T_LeftParen  shift, and go to state 82
+
+
+State 33
+
+   48 SelectionStmt: T_If . T_LeftParen Expression T_RightParen Statement T_Else Statement
+   49              | T_If . T_LeftParen Expression T_RightParen Statement
+
+    T_LeftParen  shift, and go to state 83
+
+
+State 34
+
+   55 JumpStmt: T_Return . T_Semicolon
+   56         | T_Return . Expression T_Semicolon
+
+    T_LeftParen      shift, and go to state 40
+    T_Semicolon      shift, and go to state 84
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 85
+
+
+State 35
+
+   53 JumpStmt: T_Break . T_Semicolon
+
+    T_Semicolon  shift, and go to state 86
+
+
+State 36
+
+   54 JumpStmt: T_Continue . T_Semicolon
+
+    T_Semicolon  shift, and go to state 87
+
+
+State 37
+
+   50 SwitchStmt: T_Switch . T_LeftParen Expression T_RightParen T_LeftBrace StatementList T_RightBrace
+
+    T_LeftParen  shift, and go to state 88
+
+
+State 38
+
+   51 CaseStmt: T_Case . Expression T_Colon Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 89
+
+
+State 39
+
+   52 CaseStmt: T_Default . T_Colon Statement
+
+    T_Colon  shift, and go to state 90
+
+
+State 40
+
+   63 PrimaryExpr: T_LeftParen . Expression T_RightParen
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 91
+
+
+State 41
+
+   33 CompoundStatement: T_LeftBrace T_RightBrace .
+
+    $default  reduce using rule 33 (CompoundStatement)
+
+
+State 42
+
+   39 SingleStatement: T_Semicolon .
+
+    $default  reduce using rule 39 (SingleStatement)
+
+
+State 43
+
+   81 UnaryExpr: T_Plus . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 92
+
+
+State 44
+
+   82 UnaryExpr: T_Dash . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 93
+
+
+State 45
+
+   79 UnaryExpr: T_Inc . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 94
+
+
+State 46
+
+   80 UnaryExpr: T_Dec . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 95
+
+
+State 47
+
+   59 PrimaryExpr: T_Identifier .
+   71 FunctionIdentifier: T_Identifier .
+
+    T_LeftParen  reduce using rule 71 (FunctionIdentifier)
+    $default     reduce using rule 59 (PrimaryExpr)
+
+
+State 48
+
+   60 PrimaryExpr: T_IntConstant .
+
+    $default  reduce using rule 60 (PrimaryExpr)
+
+
+State 49
+
+   61 PrimaryExpr: T_FloatConstant .
+
+    $default  reduce using rule 61 (PrimaryExpr)
+
+
+State 50
+
+   62 PrimaryExpr: T_BoolConstant .
+
+    $default  reduce using rule 62 (PrimaryExpr)
+
+
+State 51
+
+   40 SingleStatement: SingleDecl . T_Semicolon
+
+    T_Semicolon  shift, and go to state 96
+
+
+State 52
+
+   12 SingleDecl: TypeDecl . T_Identifier
+   14           | TypeDecl . T_Identifier T_Equal Initializer
+   16           | TypeDecl . T_Identifier T_LeftBracket T_IntConstant T_RightBracket
+
+    T_Identifier  shift, and go to state 97
+
+
+State 53
+
+   37 Statement: CompoundStatement .
+
+    $default  reduce using rule 37 (Statement)
+
+
+State 54
+
+   34 CompoundStatement: T_LeftBrace StatementList . T_RightBrace
+   36 StatementList: StatementList . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_RightBrace     shift, and go to state 98
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 99
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 55
+
+   35 StatementList: Statement .
+
+    $default  reduce using rule 35 (StatementList)
+
+
+State 56
+
+   38 Statement: SingleStatement .
+
+    $default  reduce using rule 38 (Statement)
+
+
+State 57
+
+   42 SingleStatement: SelectionStmt .
+
+    $default  reduce using rule 42 (SingleStatement)
+
+
+State 58
+
+   43 SingleStatement: SwitchStmt .
+
+    $default  reduce using rule 43 (SingleStatement)
+
+
+State 59
+
+   44 SingleStatement: CaseStmt .
+
+    $default  reduce using rule 44 (SingleStatement)
+
+
+State 60
+
+   45 SingleStatement: JumpStmt .
+
+    $default  reduce using rule 45 (SingleStatement)
+
+
+State 61
+
+   46 SingleStatement: WhileStmt .
+
+    $default  reduce using rule 46 (SingleStatement)
+
+
+State 62
+
+   47 SingleStatement: ForStmt .
+
+    $default  reduce using rule 47 (SingleStatement)
+
+
+State 63
+
+   72 PostfixExpr: PrimaryExpr .
+
+    $default  reduce using rule 72 (PostfixExpr)
+
+
+State 64
+
+   74 PostfixExpr: FunctionCallExpr .
+
+    $default  reduce using rule 74 (PostfixExpr)
+
+
+State 65
+
+   65 FunctionCallExpr: FunctionCallHeaderNoParameters . T_RightParen
+
+    T_RightParen  shift, and go to state 100
+
+
+State 66
+
+   64 FunctionCallExpr: FunctionCallHeaderWithParameters . T_RightParen
+
+    T_RightParen  shift, and go to state 101
+
+
+State 67
+
+   66 FunctionCallHeaderNoParameters: FunctionIdentifier . T_LeftParen T_Void
+   67                               | FunctionIdentifier . T_LeftParen
+   68 FunctionCallHeaderWithParameters: FunctionIdentifier . T_LeftParen ArgumentList
+
+    T_LeftParen  shift, and go to state 102
+
+
+State 68
+
+   73 PostfixExpr: PostfixExpr . T_LeftBracket Expression T_RightBracket
+   75            | PostfixExpr . T_Inc
+   76            | PostfixExpr . T_Dec
+   77            | PostfixExpr . T_Dot T_FieldSelection
+   78 UnaryExpr: PostfixExpr .
+
+    T_LeftBracket  shift, and go to state 103
+    T_Dot          shift, and go to state 104
+    T_Inc          shift, and go to state 105
+    T_Dec          shift, and go to state 106
+
+    $default  reduce using rule 78 (UnaryExpr)
+
+
+State 69
+
+   83 MultiExpr: UnaryExpr .
+  103 Expression: UnaryExpr . AssignOp Expression
+
+    T_MulAssign  shift, and go to state 107
+    T_DivAssign  shift, and go to state 108
+    T_AddAssign  shift, and go to state 109
+    T_SubAssign  shift, and go to state 110
+    T_Equal      shift, and go to state 111
+
+    $default  reduce using rule 83 (MultiExpr)
+
+    AssignOp  go to state 112
+
+
+State 70
+
+   84 MultiExpr: MultiExpr . T_Star UnaryExpr
+   85          | MultiExpr . T_Slash UnaryExpr
+   86 AdditionExpr: MultiExpr .
+
+    T_Star   shift, and go to state 113
+    T_Slash  shift, and go to state 114
+
+    $default  reduce using rule 86 (AdditionExpr)
+
+
+State 71
+
+   87 AdditionExpr: AdditionExpr . T_Plus MultiExpr
+   88             | AdditionExpr . T_Dash MultiExpr
+   89 RelationExpr: AdditionExpr .
+
+    T_Plus  shift, and go to state 115
+    T_Dash  shift, and go to state 116
+
+    $default  reduce using rule 89 (RelationExpr)
+
+
+State 72
+
+   90 RelationExpr: RelationExpr . T_LeftAngle AdditionExpr
+   91             | RelationExpr . T_RightAngle AdditionExpr
+   92             | RelationExpr . T_GreaterEqual AdditionExpr
+   93             | RelationExpr . T_LessEqual AdditionExpr
+   94 EqualityExpr: RelationExpr .
+
+    T_LessEqual     shift, and go to state 117
+    T_GreaterEqual  shift, and go to state 118
+    T_LeftAngle     shift, and go to state 119
+    T_RightAngle    shift, and go to state 120
+
+    $default  reduce using rule 94 (EqualityExpr)
+
+
+State 73
+
+   95 EqualityExpr: EqualityExpr . T_EQ RelationExpr
+   96             | EqualityExpr . T_NE RelationExpr
+   97 LogicAndExpr: EqualityExpr .
+
+    T_EQ  shift, and go to state 121
+    T_NE  shift, and go to state 122
+
+    $default  reduce using rule 97 (LogicAndExpr)
+
+
+State 74
+
+   98 LogicAndExpr: LogicAndExpr . T_And EqualityExpr
+   99 LogicOrExpr: LogicAndExpr .
+
+    T_And  shift, and go to state 123
+
+    $default  reduce using rule 99 (LogicOrExpr)
+
+
+State 75
+
+  100 LogicOrExpr: LogicOrExpr . T_Or LogicAndExpr
+  101 Expression: LogicOrExpr .
+  102           | LogicOrExpr . T_Question LogicOrExpr T_Colon LogicOrExpr
+
+    T_Question  shift, and go to state 124
+    T_Or        shift, and go to state 125
+
+    $default  reduce using rule 101 (Expression)
+
+
+State 76
+
+   41 SingleStatement: Expression . T_Semicolon
+
+    T_Semicolon  shift, and go to state 126
+
+
+State 77
+
+   13 SingleDecl: TypeQualify TypeDecl T_Identifier .
+   15           | TypeQualify TypeDecl T_Identifier . T_Equal Initializer
+   17           | TypeQualify TypeDecl T_Identifier . T_LeftBracket T_IntConstant T_RightBracket
+
+    T_LeftBracket  shift, and go to state 127
+    T_Equal        shift, and go to state 128
+
+    $default  reduce using rule 13 (SingleDecl)
+
+
+State 78
+
+    8 FuncDecl: TypeDecl T_Identifier T_LeftParen . T_RightParen
+    9         | TypeDecl T_Identifier T_LeftParen . ParameterList T_RightParen
+
+    T_Void        shift, and go to state 1
+    T_Bool        shift, and go to state 2
+    T_Int         shift, and go to state 3
+    T_Float       shift, and go to state 4
+    T_Vec2        shift, and go to state 5
+    T_Vec3        shift, and go to state 6
+    T_Vec4        shift, and go to state 7
+    T_Mat2        shift, and go to state 8
+    T_Mat3        shift, and go to state 9
+    T_Mat4        shift, and go to state 10
+    T_In          shift, and go to state 11
+    T_Out         shift, and go to state 12
+    T_Const       shift, and go to state 13
+    T_Uniform     shift, and go to state 14
+    T_RightParen  shift, and go to state 129
+
+    ParameterList  go to state 130
+    SingleDecl     go to state 131
+    TypeQualify    go to state 21
+    TypeDecl       go to state 52
+
+
+State 79
+
+   16 SingleDecl: TypeDecl T_Identifier T_LeftBracket . T_IntConstant T_RightBracket
+
+    T_IntConstant  shift, and go to state 132
+
+
+State 80
+
+   14 SingleDecl: TypeDecl T_Identifier T_Equal . Initializer
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    Initializer                       go to state 133
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 134
+
+
+State 81
+
+   57 WhileStmt: T_While T_LeftParen . Expression T_RightParen Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 135
+
+
+State 82
+
+   58 ForStmt: T_For T_LeftParen . Expression T_Semicolon Expression T_Semicolon Expression T_RightParen Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 136
+
+
+State 83
+
+   48 SelectionStmt: T_If T_LeftParen . Expression T_RightParen Statement T_Else Statement
+   49              | T_If T_LeftParen . Expression T_RightParen Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 137
+
+
+State 84
+
+   55 JumpStmt: T_Return T_Semicolon .
+
+    $default  reduce using rule 55 (JumpStmt)
+
+
+State 85
+
+   56 JumpStmt: T_Return Expression . T_Semicolon
+
+    T_Semicolon  shift, and go to state 138
+
+
+State 86
+
+   53 JumpStmt: T_Break T_Semicolon .
+
+    $default  reduce using rule 53 (JumpStmt)
+
+
+State 87
+
+   54 JumpStmt: T_Continue T_Semicolon .
+
+    $default  reduce using rule 54 (JumpStmt)
+
+
+State 88
+
+   50 SwitchStmt: T_Switch T_LeftParen . Expression T_RightParen T_LeftBrace StatementList T_RightBrace
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 139
+
+
+State 89
+
+   51 CaseStmt: T_Case Expression . T_Colon Statement
+
+    T_Colon  shift, and go to state 140
+
+
+State 90
+
+   52 CaseStmt: T_Default T_Colon . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 141
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 91
+
+   63 PrimaryExpr: T_LeftParen Expression . T_RightParen
+
+    T_RightParen  shift, and go to state 142
+
+
+State 92
+
+   81 UnaryExpr: T_Plus UnaryExpr .
+
+    $default  reduce using rule 81 (UnaryExpr)
+
+
+State 93
+
+   82 UnaryExpr: T_Dash UnaryExpr .
+
+    $default  reduce using rule 82 (UnaryExpr)
+
+
+State 94
+
+   79 UnaryExpr: T_Inc UnaryExpr .
+
+    $default  reduce using rule 79 (UnaryExpr)
+
+
+State 95
+
+   80 UnaryExpr: T_Dec UnaryExpr .
+
+    $default  reduce using rule 80 (UnaryExpr)
+
+
+State 96
+
+   40 SingleStatement: SingleDecl T_Semicolon .
+
+    $default  reduce using rule 40 (SingleStatement)
+
+
+State 97
+
+   12 SingleDecl: TypeDecl T_Identifier .
+   14           | TypeDecl T_Identifier . T_Equal Initializer
+   16           | TypeDecl T_Identifier . T_LeftBracket T_IntConstant T_RightBracket
+
+    T_LeftBracket  shift, and go to state 79
+    T_Equal        shift, and go to state 80
+
+    $default  reduce using rule 12 (SingleDecl)
+
+
+State 98
+
+   34 CompoundStatement: T_LeftBrace StatementList T_RightBrace .
+
+    $default  reduce using rule 34 (CompoundStatement)
+
+
+State 99
+
+   36 StatementList: StatementList Statement .
+
+    $default  reduce using rule 36 (StatementList)
+
+
+State 100
+
+   65 FunctionCallExpr: FunctionCallHeaderNoParameters T_RightParen .
+
+    $default  reduce using rule 65 (FunctionCallExpr)
+
+
+State 101
+
+   64 FunctionCallExpr: FunctionCallHeaderWithParameters T_RightParen .
+
+    $default  reduce using rule 64 (FunctionCallExpr)
+
+
+State 102
+
+   66 FunctionCallHeaderNoParameters: FunctionIdentifier T_LeftParen . T_Void
+   67                               | FunctionIdentifier T_LeftParen .
+   68 FunctionCallHeaderWithParameters: FunctionIdentifier T_LeftParen . ArgumentList
+
+    T_Void           shift, and go to state 143
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    $default  reduce using rule 67 (FunctionCallHeaderNoParameters)
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    ArgumentList                      go to state 144
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 145
+
+
+State 103
+
+   73 PostfixExpr: PostfixExpr T_LeftBracket . Expression T_RightBracket
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 146
+
+
+State 104
+
+   77 PostfixExpr: PostfixExpr T_Dot . T_FieldSelection
+
+    T_FieldSelection  shift, and go to state 147
+
+
+State 105
+
+   75 PostfixExpr: PostfixExpr T_Inc .
+
+    $default  reduce using rule 75 (PostfixExpr)
+
+
+State 106
+
+   76 PostfixExpr: PostfixExpr T_Dec .
+
+    $default  reduce using rule 76 (PostfixExpr)
+
+
+State 107
+
+  107 AssignOp: T_MulAssign .
+
+    $default  reduce using rule 107 (AssignOp)
+
+
+State 108
+
+  108 AssignOp: T_DivAssign .
+
+    $default  reduce using rule 108 (AssignOp)
+
+
+State 109
+
+  105 AssignOp: T_AddAssign .
+
+    $default  reduce using rule 105 (AssignOp)
+
+
+State 110
+
+  106 AssignOp: T_SubAssign .
+
+    $default  reduce using rule 106 (AssignOp)
+
+
+State 111
+
+  104 AssignOp: T_Equal .
+
+    $default  reduce using rule 104 (AssignOp)
+
+
+State 112
+
+  103 Expression: UnaryExpr AssignOp . Expression
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 148
+
+
+State 113
+
+   84 MultiExpr: MultiExpr T_Star . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 149
+
+
+State 114
+
+   85 MultiExpr: MultiExpr T_Slash . UnaryExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 150
+
+
+State 115
+
+   87 AdditionExpr: AdditionExpr T_Plus . MultiExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 152
+
+
+State 116
+
+   88 AdditionExpr: AdditionExpr T_Dash . MultiExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 153
+
+
+State 117
+
+   93 RelationExpr: RelationExpr T_LessEqual . AdditionExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 154
+
+
+State 118
+
+   92 RelationExpr: RelationExpr T_GreaterEqual . AdditionExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 155
+
+
+State 119
+
+   90 RelationExpr: RelationExpr T_LeftAngle . AdditionExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 156
+
+
+State 120
+
+   91 RelationExpr: RelationExpr T_RightAngle . AdditionExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 157
+
+
+State 121
+
+   95 EqualityExpr: EqualityExpr T_EQ . RelationExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 158
+
+
+State 122
+
+   96 EqualityExpr: EqualityExpr T_NE . RelationExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 159
+
+
+State 123
+
+   98 LogicAndExpr: LogicAndExpr T_And . EqualityExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 160
+
+
+State 124
+
+  102 Expression: LogicOrExpr T_Question . LogicOrExpr T_Colon LogicOrExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 161
+
+
+State 125
+
+  100 LogicOrExpr: LogicOrExpr T_Or . LogicAndExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 162
+
+
+State 126
+
+   41 SingleStatement: Expression T_Semicolon .
+
+    $default  reduce using rule 41 (SingleStatement)
+
+
+State 127
+
+   17 SingleDecl: TypeQualify TypeDecl T_Identifier T_LeftBracket . T_IntConstant T_RightBracket
+
+    T_IntConstant  shift, and go to state 163
+
+
+State 128
+
+   15 SingleDecl: TypeQualify TypeDecl T_Identifier T_Equal . Initializer
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    Initializer                       go to state 164
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 134
+
+
+State 129
+
+    8 FuncDecl: TypeDecl T_Identifier T_LeftParen T_RightParen .
+
+    $default  reduce using rule 8 (FuncDecl)
+
+
+State 130
+
+    9 FuncDecl: TypeDecl T_Identifier T_LeftParen ParameterList . T_RightParen
+   11 ParameterList: ParameterList . T_Comma SingleDecl
+
+    T_RightParen  shift, and go to state 165
+    T_Comma       shift, and go to state 166
+
+
+State 131
+
+   10 ParameterList: SingleDecl .
+
+    $default  reduce using rule 10 (ParameterList)
+
+
+State 132
+
+   16 SingleDecl: TypeDecl T_Identifier T_LeftBracket T_IntConstant . T_RightBracket
+
+    T_RightBracket  shift, and go to state 167
+
+
+State 133
+
+   14 SingleDecl: TypeDecl T_Identifier T_Equal Initializer .
+
+    $default  reduce using rule 14 (SingleDecl)
+
+
+State 134
+
+   18 Initializer: Expression .
+
+    $default  reduce using rule 18 (Initializer)
+
+
+State 135
+
+   57 WhileStmt: T_While T_LeftParen Expression . T_RightParen Statement
+
+    T_RightParen  shift, and go to state 168
+
+
+State 136
+
+   58 ForStmt: T_For T_LeftParen Expression . T_Semicolon Expression T_Semicolon Expression T_RightParen Statement
+
+    T_Semicolon  shift, and go to state 169
+
+
+State 137
+
+   48 SelectionStmt: T_If T_LeftParen Expression . T_RightParen Statement T_Else Statement
+   49              | T_If T_LeftParen Expression . T_RightParen Statement
+
+    T_RightParen  shift, and go to state 170
+
+
+State 138
+
+   56 JumpStmt: T_Return Expression T_Semicolon .
+
+    $default  reduce using rule 56 (JumpStmt)
+
+
+State 139
+
+   50 SwitchStmt: T_Switch T_LeftParen Expression . T_RightParen T_LeftBrace StatementList T_RightBrace
+
+    T_RightParen  shift, and go to state 171
+
+
+State 140
+
+   51 CaseStmt: T_Case Expression T_Colon . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 172
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 141
+
+   52 CaseStmt: T_Default T_Colon Statement .
+
+    $default  reduce using rule 52 (CaseStmt)
+
+
+State 142
+
+   63 PrimaryExpr: T_LeftParen Expression T_RightParen .
+
+    $default  reduce using rule 63 (PrimaryExpr)
+
+
+State 143
+
+   66 FunctionCallHeaderNoParameters: FunctionIdentifier T_LeftParen T_Void .
+
+    $default  reduce using rule 66 (FunctionCallHeaderNoParameters)
+
+
+State 144
+
+   68 FunctionCallHeaderWithParameters: FunctionIdentifier T_LeftParen ArgumentList .
+   70 ArgumentList: ArgumentList . T_Comma Expression
+
+    T_Comma  shift, and go to state 173
+
+    $default  reduce using rule 68 (FunctionCallHeaderWithParameters)
+
+
+State 145
+
+   69 ArgumentList: Expression .
+
+    $default  reduce using rule 69 (ArgumentList)
+
+
+State 146
+
+   73 PostfixExpr: PostfixExpr T_LeftBracket Expression . T_RightBracket
+
+    T_RightBracket  shift, and go to state 174
+
+
+State 147
+
+   77 PostfixExpr: PostfixExpr T_Dot T_FieldSelection .
+
+    $default  reduce using rule 77 (PostfixExpr)
+
+
+State 148
+
+  103 Expression: UnaryExpr AssignOp Expression .
+
+    $default  reduce using rule 103 (Expression)
+
+
+State 149
+
+   84 MultiExpr: MultiExpr T_Star UnaryExpr .
+
+    $default  reduce using rule 84 (MultiExpr)
+
+
+State 150
+
+   85 MultiExpr: MultiExpr T_Slash UnaryExpr .
+
+    $default  reduce using rule 85 (MultiExpr)
+
+
+State 151
+
+   83 MultiExpr: UnaryExpr .
+
+    $default  reduce using rule 83 (MultiExpr)
+
+
+State 152
+
+   84 MultiExpr: MultiExpr . T_Star UnaryExpr
+   85          | MultiExpr . T_Slash UnaryExpr
+   87 AdditionExpr: AdditionExpr T_Plus MultiExpr .
+
+    T_Star   shift, and go to state 113
+    T_Slash  shift, and go to state 114
+
+    $default  reduce using rule 87 (AdditionExpr)
+
+
+State 153
+
+   84 MultiExpr: MultiExpr . T_Star UnaryExpr
+   85          | MultiExpr . T_Slash UnaryExpr
+   88 AdditionExpr: AdditionExpr T_Dash MultiExpr .
+
+    T_Star   shift, and go to state 113
+    T_Slash  shift, and go to state 114
+
+    $default  reduce using rule 88 (AdditionExpr)
+
+
+State 154
+
+   87 AdditionExpr: AdditionExpr . T_Plus MultiExpr
+   88             | AdditionExpr . T_Dash MultiExpr
+   93 RelationExpr: RelationExpr T_LessEqual AdditionExpr .
+
+    T_Plus  shift, and go to state 115
+    T_Dash  shift, and go to state 116
+
+    $default  reduce using rule 93 (RelationExpr)
+
+
+State 155
+
+   87 AdditionExpr: AdditionExpr . T_Plus MultiExpr
+   88             | AdditionExpr . T_Dash MultiExpr
+   92 RelationExpr: RelationExpr T_GreaterEqual AdditionExpr .
+
+    T_Plus  shift, and go to state 115
+    T_Dash  shift, and go to state 116
+
+    $default  reduce using rule 92 (RelationExpr)
+
+
+State 156
+
+   87 AdditionExpr: AdditionExpr . T_Plus MultiExpr
+   88             | AdditionExpr . T_Dash MultiExpr
+   90 RelationExpr: RelationExpr T_LeftAngle AdditionExpr .
+
+    T_Plus  shift, and go to state 115
+    T_Dash  shift, and go to state 116
+
+    $default  reduce using rule 90 (RelationExpr)
+
+
+State 157
+
+   87 AdditionExpr: AdditionExpr . T_Plus MultiExpr
+   88             | AdditionExpr . T_Dash MultiExpr
+   91 RelationExpr: RelationExpr T_RightAngle AdditionExpr .
+
+    T_Plus  shift, and go to state 115
+    T_Dash  shift, and go to state 116
+
+    $default  reduce using rule 91 (RelationExpr)
+
+
+State 158
+
+   90 RelationExpr: RelationExpr . T_LeftAngle AdditionExpr
+   91             | RelationExpr . T_RightAngle AdditionExpr
+   92             | RelationExpr . T_GreaterEqual AdditionExpr
+   93             | RelationExpr . T_LessEqual AdditionExpr
+   95 EqualityExpr: EqualityExpr T_EQ RelationExpr .
+
+    T_LessEqual     shift, and go to state 117
+    T_GreaterEqual  shift, and go to state 118
+    T_LeftAngle     shift, and go to state 119
+    T_RightAngle    shift, and go to state 120
+
+    $default  reduce using rule 95 (EqualityExpr)
+
+
+State 159
+
+   90 RelationExpr: RelationExpr . T_LeftAngle AdditionExpr
+   91             | RelationExpr . T_RightAngle AdditionExpr
+   92             | RelationExpr . T_GreaterEqual AdditionExpr
+   93             | RelationExpr . T_LessEqual AdditionExpr
+   96 EqualityExpr: EqualityExpr T_NE RelationExpr .
+
+    T_LessEqual     shift, and go to state 117
+    T_GreaterEqual  shift, and go to state 118
+    T_LeftAngle     shift, and go to state 119
+    T_RightAngle    shift, and go to state 120
+
+    $default  reduce using rule 96 (EqualityExpr)
+
+
+State 160
+
+   95 EqualityExpr: EqualityExpr . T_EQ RelationExpr
+   96             | EqualityExpr . T_NE RelationExpr
+   98 LogicAndExpr: LogicAndExpr T_And EqualityExpr .
+
+    T_EQ  shift, and go to state 121
+    T_NE  shift, and go to state 122
+
+    $default  reduce using rule 98 (LogicAndExpr)
+
+
+State 161
+
+  100 LogicOrExpr: LogicOrExpr . T_Or LogicAndExpr
+  102 Expression: LogicOrExpr T_Question LogicOrExpr . T_Colon LogicOrExpr
+
+    T_Colon  shift, and go to state 175
+    T_Or     shift, and go to state 125
+
+
+State 162
+
+   98 LogicAndExpr: LogicAndExpr . T_And EqualityExpr
+  100 LogicOrExpr: LogicOrExpr T_Or LogicAndExpr .
+
+    T_And  shift, and go to state 123
+
+    $default  reduce using rule 100 (LogicOrExpr)
+
+
+State 163
+
+   17 SingleDecl: TypeQualify TypeDecl T_Identifier T_LeftBracket T_IntConstant . T_RightBracket
+
+    T_RightBracket  shift, and go to state 176
+
+
+State 164
+
+   15 SingleDecl: TypeQualify TypeDecl T_Identifier T_Equal Initializer .
+
+    $default  reduce using rule 15 (SingleDecl)
+
+
+State 165
+
+    9 FuncDecl: TypeDecl T_Identifier T_LeftParen ParameterList T_RightParen .
+
+    $default  reduce using rule 9 (FuncDecl)
+
+
+State 166
+
+   11 ParameterList: ParameterList T_Comma . SingleDecl
+
+    T_Void     shift, and go to state 1
+    T_Bool     shift, and go to state 2
+    T_Int      shift, and go to state 3
+    T_Float    shift, and go to state 4
+    T_Vec2     shift, and go to state 5
+    T_Vec3     shift, and go to state 6
+    T_Vec4     shift, and go to state 7
+    T_Mat2     shift, and go to state 8
+    T_Mat3     shift, and go to state 9
+    T_Mat4     shift, and go to state 10
+    T_In       shift, and go to state 11
+    T_Out      shift, and go to state 12
+    T_Const    shift, and go to state 13
+    T_Uniform  shift, and go to state 14
+
+    SingleDecl   go to state 177
+    TypeQualify  go to state 21
+    TypeDecl     go to state 52
+
+
+State 167
+
+   16 SingleDecl: TypeDecl T_Identifier T_LeftBracket T_IntConstant T_RightBracket .
+
+    $default  reduce using rule 16 (SingleDecl)
+
+
+State 168
+
+   57 WhileStmt: T_While T_LeftParen Expression T_RightParen . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 178
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 169
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon . Expression T_Semicolon Expression T_RightParen Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 179
+
+
+State 170
+
+   48 SelectionStmt: T_If T_LeftParen Expression T_RightParen . Statement T_Else Statement
+   49              | T_If T_LeftParen Expression T_RightParen . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 180
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 171
+
+   50 SwitchStmt: T_Switch T_LeftParen Expression T_RightParen . T_LeftBrace StatementList T_RightBrace
+
+    T_LeftBrace  shift, and go to state 181
+
+
+State 172
+
+   51 CaseStmt: T_Case Expression T_Colon Statement .
+
+    $default  reduce using rule 51 (CaseStmt)
+
+
+State 173
+
+   70 ArgumentList: ArgumentList T_Comma . Expression
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 182
+
+
+State 174
+
+   73 PostfixExpr: PostfixExpr T_LeftBracket Expression T_RightBracket .
+
+    $default  reduce using rule 73 (PostfixExpr)
+
+
+State 175
+
+  102 Expression: LogicOrExpr T_Question LogicOrExpr T_Colon . LogicOrExpr
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 151
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 183
+
+
+State 176
+
+   17 SingleDecl: TypeQualify TypeDecl T_Identifier T_LeftBracket T_IntConstant T_RightBracket .
+
+    $default  reduce using rule 17 (SingleDecl)
+
+
+State 177
+
+   11 ParameterList: ParameterList T_Comma SingleDecl .
+
+    $default  reduce using rule 11 (ParameterList)
+
+
+State 178
+
+   57 WhileStmt: T_While T_LeftParen Expression T_RightParen Statement .
+
+    $default  reduce using rule 57 (WhileStmt)
+
+
+State 179
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression . T_Semicolon Expression T_RightParen Statement
+
+    T_Semicolon  shift, and go to state 184
+
+
+State 180
+
+   48 SelectionStmt: T_If T_LeftParen Expression T_RightParen Statement . T_Else Statement
+   49              | T_If T_LeftParen Expression T_RightParen Statement .
+
+    T_Else  shift, and go to state 185
+
+    $default  reduce using rule 49 (SelectionStmt)
+
+
+State 181
+
+   50 SwitchStmt: T_Switch T_LeftParen Expression T_RightParen T_LeftBrace . StatementList T_RightBrace
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    StatementList                     go to state 186
+    Statement                         go to state 55
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 182
+
+   70 ArgumentList: ArgumentList T_Comma Expression .
+
+    $default  reduce using rule 70 (ArgumentList)
+
+
+State 183
+
+  100 LogicOrExpr: LogicOrExpr . T_Or LogicAndExpr
+  102 Expression: LogicOrExpr T_Question LogicOrExpr T_Colon LogicOrExpr .
+
+    T_Or  shift, and go to state 125
+
+    $default  reduce using rule 102 (Expression)
+
+
+State 184
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression T_Semicolon . Expression T_RightParen Statement
+
+    T_LeftParen      shift, and go to state 40
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 187
+
+
+State 185
+
+   48 SelectionStmt: T_If T_LeftParen Expression T_RightParen Statement T_Else . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 188
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 186
+
+   36 StatementList: StatementList . Statement
+   50 SwitchStmt: T_Switch T_LeftParen Expression T_RightParen T_LeftBrace StatementList . T_RightBrace
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_RightBrace     shift, and go to state 189
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 99
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 187
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression T_Semicolon Expression . T_RightParen Statement
+
+    T_RightParen  shift, and go to state 190
+
+
+State 188
+
+   48 SelectionStmt: T_If T_LeftParen Expression T_RightParen Statement T_Else Statement .
+
+    $default  reduce using rule 48 (SelectionStmt)
+
+
+State 189
+
+   50 SwitchStmt: T_Switch T_LeftParen Expression T_RightParen T_LeftBrace StatementList T_RightBrace .
+
+    $default  reduce using rule 50 (SwitchStmt)
+
+
+State 190
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression T_Semicolon Expression T_RightParen . Statement
+
+    T_Void           shift, and go to state 1
+    T_Bool           shift, and go to state 2
+    T_Int            shift, and go to state 3
+    T_Float          shift, and go to state 4
+    T_Vec2           shift, and go to state 5
+    T_Vec3           shift, and go to state 6
+    T_Vec4           shift, and go to state 7
+    T_Mat2           shift, and go to state 8
+    T_Mat3           shift, and go to state 9
+    T_Mat4           shift, and go to state 10
+    T_While          shift, and go to state 31
+    T_For            shift, and go to state 32
+    T_If             shift, and go to state 33
+    T_Return         shift, and go to state 34
+    T_Break          shift, and go to state 35
+    T_Continue       shift, and go to state 36
+    T_Switch         shift, and go to state 37
+    T_Case           shift, and go to state 38
+    T_Default        shift, and go to state 39
+    T_In             shift, and go to state 11
+    T_Out            shift, and go to state 12
+    T_Const          shift, and go to state 13
+    T_Uniform        shift, and go to state 14
+    T_LeftParen      shift, and go to state 40
+    T_LeftBrace      shift, and go to state 25
+    T_Semicolon      shift, and go to state 42
+    T_Plus           shift, and go to state 43
+    T_Dash           shift, and go to state 44
+    T_Inc            shift, and go to state 45
+    T_Dec            shift, and go to state 46
+    T_Identifier     shift, and go to state 47
+    T_IntConstant    shift, and go to state 48
+    T_FloatConstant  shift, and go to state 49
+    T_BoolConstant   shift, and go to state 50
+
+    SingleDecl                        go to state 51
+    TypeQualify                       go to state 21
+    TypeDecl                          go to state 52
+    CompoundStatement                 go to state 53
+    Statement                         go to state 191
+    SingleStatement                   go to state 56
+    SelectionStmt                     go to state 57
+    SwitchStmt                        go to state 58
+    CaseStmt                          go to state 59
+    JumpStmt                          go to state 60
+    WhileStmt                         go to state 61
+    ForStmt                           go to state 62
+    PrimaryExpr                       go to state 63
+    FunctionCallExpr                  go to state 64
+    FunctionCallHeaderNoParameters    go to state 65
+    FunctionCallHeaderWithParameters  go to state 66
+    FunctionIdentifier                go to state 67
+    PostfixExpr                       go to state 68
+    UnaryExpr                         go to state 69
+    MultiExpr                         go to state 70
+    AdditionExpr                      go to state 71
+    RelationExpr                      go to state 72
+    EqualityExpr                      go to state 73
+    LogicAndExpr                      go to state 74
+    LogicOrExpr                       go to state 75
+    Expression                        go to state 76
+
+
+State 191
+
+   58 ForStmt: T_For T_LeftParen Expression T_Semicolon Expression T_Semicolon Expression T_RightParen Statement .
+
+    $default  reduce using rule 58 (ForStmt)

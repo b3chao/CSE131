@@ -8,18 +8,6 @@
 #include "symtable.h"
 #include "errors.h"   
 
-//Decl Check
-void Decl::Check() {
-    printf("Decl Check()\n");
-    VarDecl *v = dynamic_cast<VarDecl *>(this);
-    if(v)
-        v->Check();
-
-    FnDecl *f = dynamic_cast<FnDecl *>(this);
-    if(f)
-        f->Check();
-}
-
 //VarDecl Check
 void VarDecl::Check() {
     printf("VarDecl Check()\n");
@@ -27,11 +15,36 @@ void VarDecl::Check() {
 
     if(findS != NULL) {//symbol already exists
         ReportError::DeclConflict(this, findS->decl);
-    } else {//new symbol
-        Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
-        Node::st->insert(*s);
+        Node::st->remove(*findS);
     }
+
+    Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
+    Node::st->insert(*s);
 }     
+
+
+void FnDecl::Check() {
+    printf("FnDecl Check()\n");
+    Symbol *findS = Node::st->find(this->id->GetName());
+    if(findS != NULL) {//symbol already exists
+        ReportError::DeclConflict(this, findS->decl);
+        Node::st->remove(*findS);
+
+    }
+
+    Symbol *s = new Symbol(this->id->GetName(), this, E_FunctionDecl);
+    Node::st->insert(*s);
+    st->push();
+    if (this->formals->NumElements()>0) {
+        
+        for (int i = 0;i<this->formals->NumElements();i++) {
+            VarDecl * vDecl = this->formals->Nth(i);
+            vDecl->Check();
+        }
+    }
+    this->body->Check(); 
+    st->pop();
+}
          
 Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
     Assert(n != NULL);

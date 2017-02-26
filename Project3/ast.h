@@ -52,6 +52,7 @@ class Node  {
     yyltype *location;
     Node *parent;
     static SymbolTable *st;
+    static int loopNum;
 
   public:
     Node(yyltype loc);
