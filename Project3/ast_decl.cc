@@ -6,15 +6,11 @@
 #include "ast_type.h"
 #include "ast_stmt.h"
 #include "symtable.h"
-#include "errors.h"        
-         
-Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
-    Assert(n != NULL);
-    (id=n)->SetParent(this); 
-}
+#include "errors.h"   
 
-//Decl Check: VarDecl, FnDecl
+//Decl Check
 void Decl::Check() {
+    printf("Decl Check()\n");
     VarDecl *v = dynamic_cast<VarDecl *>(this);
     if(v)
         v->Check();
@@ -22,6 +18,24 @@ void Decl::Check() {
     FnDecl *f = dynamic_cast<FnDecl *>(this);
     if(f)
         f->Check();
+}
+
+//VarDecl Check
+void VarDecl::Check() {
+    printf("VarDecl Check()\n");
+    Symbol *findS = Node::st->find(this->id->GetName());
+
+    if(findS != NULL) {//symbol already exists
+        ReportError::DeclConflict(this, findS->decl);
+    } else {//new symbol
+        Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
+        Node::st->insert(*s);
+    }
+}     
+         
+Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
+    Assert(n != NULL);
+    (id=n)->SetParent(this); 
 }
 
 VarDecl::VarDecl(Identifier *n, Type *t, Expr *e) : Decl(n) {
@@ -43,18 +57,6 @@ VarDecl::VarDecl(Identifier *n, Type *t, TypeQualifier *tq, Expr *e) : Decl(n) {
     (type=t)->SetParent(this);
     (typeq=tq)->SetParent(this);
     if (e) (assignTo=e)->SetParent(this);
-}
-
-//VarDecl
-void VarDecl::Check() {
-    Symbol *findS = Node::st->find(this->id->GetName());
-
-    // if(findS) {//symbol already exists
-    //     ReportError::DeclConflict(this, findS->decl);
-    // } else {//new symbol
-    //     Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
-    //     Node::st->insert(*s);
-    // }
 }
   
 void VarDecl::PrintChildren(int indentLevel) { 

@@ -21,7 +21,10 @@ void ScopedTable::remove(Symbol &sym) {
 }
 
 Symbol *ScopedTable::find(const char *name) {
-	return &(symbols.find(name)->second);
+    if (symbols.find(name) != symbols.end())
+	   return &(symbols.find(name)->second);
+    else
+        return NULL;
 }
 
 
