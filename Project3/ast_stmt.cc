@@ -41,6 +41,189 @@ void Program::Check() {
       }
     }
 }
+//--------------------------------------------------------------------------------------
+//own fns
+
+void Stmt::Check() {
+  printf("Stmt Check\n");
+  this->Check();
+}
+
+void StmtBlock::Check() {
+  printf("StmtBlock Check\n");
+  st->push();
+  
+  if (stmts->NumElements()>0) {
+    for (int i = 0; i<stmts->NumElements();i++) {
+      Stmt * stmt = stmts->Nth(i);
+      stmt->Check();
+    }
+  }
+
+  st->pop();
+}
+
+void StmtBlock::Check(bool *fromDecl) {
+  printf("StmtBlock Check\n");
+
+  if (stmts->NumElements()>0) {
+    for (int i = 0; i<stmts->NumElements();i++) {
+      Stmt * stmt = stmts->Nth(i);
+      stmt->Check();
+    }
+  }
+}
+
+void DeclStmt::Check() {
+  printf("DeclStmt Check\n");
+  this->decl->Check();
+}
+
+void ForStmt::Check() {
+  printf("ForStmt Check\n");
+  loopNum++;
+
+  if (init != NULL)
+    init->Check();
+
+  if (test != NULL) {
+    bool *valid = new bool(true);
+    Type *t = test->typeCheck(valid);
+
+    if (strcmp(t->GetTypeName(), "bool")) {
+      ReportError::TestNotBoolean(test);
+      
+      *valid = false;
+    }
+  }
+
+  if (step != NULL)
+    step->Check();
+
+  if (body != NULL)
+    body->Check();
+
+  loopNum--;
+}
+
+void WhileStmt::Check() {
+  printf("WhileStmt Check\n");
+  loopNum++;
+
+    if (test != NULL) {
+      bool *valid = new bool(true);
+      Type *t = test->typeCheck(valid);
+      if (valid) {
+        if (strcmp(t->GetTypeName(),"bool")) {
+          ReportError::TestNotBoolean(test);
+          *valid = true;
+        }
+      }
+    }
+
+    if (body != NULL)
+      body->Check();
+
+    loopNum--;
+}
+
+void IfStmt::Check() {
+  printf("IfStmt Check\n");
+  if (test != NULL) {
+    bool *valid = new bool(true);
+    Type *t = test->typeCheck(valid);
+
+    if (strcmp(t->GetTypeName(), "bool")) {
+      ReportError::TestNotBoolean(test);
+      
+      *valid = false;
+    }
+  }
+
+  if (body != NULL)
+    body->Check();
+
+  if (elseBody != NULL)
+    elseBody->Check();
+}
+
+void BreakStmt::Check() {
+  printf("BreakStmt Check\n"); 
+  if (loopNum <= 0) 
+    ReportError::BreakOutsideLoop(this);
+}
+
+void ContinueStmt::Check() {
+  printf("ContinueStmt Check\n"); 
+  if (loopNum <= 0) 
+    ReportError::ContinueOutsideLoop(this);
+}
+
+void ReturnStmt::Check() {
+  printf("ReturnStmt Check\n");
+  if (returns->empty())
+    return;
+
+  Type *rt = returns->top();
+
+  if (expr != NULL) {
+    bool *valid = new bool(true);
+    Type *t = expr->typeCheck(valid);
+
+    if (*valid) {
+      if (strcmp(t->GetTypeName(), rt->GetTypeName())) {
+        ReportError::ReturnMismatch(this, t, rt);
+      } 
+    }
+  } else {//void return
+    if (strcmp(rt->GetTypeName(),"void")) {
+      ReportError::ReturnMismatch(this, new Type("void"), rt);
+    }
+  }
+
+  *(returned->top()) = true;
+}
+
+void Case::Check() {
+  printf("Case Check\n");
+  if (label != NULL)
+    label->Check();
+
+  if (stmt != NULL)
+    stmt->Check();
+}
+
+void Default::Check() {
+  printf("Default Check\n");
+  if (label != NULL)
+    label->Check();
+
+  if (stmt != NULL)
+    stmt->Check();
+}
+
+void SwitchStmt::Check() {
+  printf("SwitchStmt Check");
+  loopNum++;
+
+  if (expr != NULL)  
+    expr->Check();
+  
+
+  if (cases->NumElements() > 0) {
+    for (int i=0; i<cases->NumElements(); i++) {
+      cases->Nth(i)->Check();
+    }
+  }
+
+  if (def != NULL)
+    def->Check();
+
+  loopNum--;
+}
+
+
+//-----------------------------------------------------------------------------------------
 
 StmtBlock::StmtBlock(List<VarDecl*> *d, List<Stmt*> *s) {
     Assert(d != NULL && s != NULL);

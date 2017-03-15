@@ -40,18 +40,23 @@
 #include <stdlib.h>   // for NULL
 #include "location.h"
 #include <iostream>
+#include <stack>
 
 using namespace std;
 
 class SymbolTable;
 class MyStack;
 class FnDecl;
+class Type;
 
 class Node  {
   protected:
     yyltype *location;
     Node *parent;
     static SymbolTable *st;
+    static int loopNum;
+    static stack<Type *> *returns;
+    static stack<bool *> *returned;
 
   public:
     Node(yyltype loc);

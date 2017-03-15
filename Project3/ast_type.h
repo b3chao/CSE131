@@ -61,6 +61,9 @@ class Type : public Node
     bool IsVector();
     bool IsMatrix();
     bool IsError();
+    char *GetTypeName() {
+        return typeName;
+    }
 };
 
 

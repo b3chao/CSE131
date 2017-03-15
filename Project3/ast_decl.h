@@ -36,8 +36,6 @@ class Decl : public Node
     Identifier *GetIdentifier() const { return id; }
     friend ostream& operator<<(ostream& out, Decl *d) { return out << d->id; }
 
-    //added semantic check
-    void Check();
 };
 
 class VarDecl : public Decl 
@@ -85,6 +83,7 @@ class FnDecl : public Decl
 
     Type *GetType() const { return returnType; }
     List<VarDecl*> *GetFormals() {return formals;}
+    void Check();
 };
 
 class FormalsError : public FnDecl

@@ -8,30 +8,86 @@
 #include "symtable.h"
 #include "errors.h"   
 
-//Decl Check
-void Decl::Check() {
-    printf("Decl Check()\n");
-    VarDecl *v = dynamic_cast<VarDecl *>(this);
-    if(v)
-        v->Check();
-
-    FnDecl *f = dynamic_cast<FnDecl *>(this);
-    if(f)
-        f->Check();
-}
-
 //VarDecl Check
 void VarDecl::Check() {
     printf("VarDecl Check()\n");
-    Symbol *findS = Node::st->find(this->id->GetName());
+    Symbol *findS = Node::st->find(this->id->GetName(), new bool(true));
 
     if(findS != NULL) {//symbol already exists
         ReportError::DeclConflict(this, findS->decl);
-    } else {//new symbol
-        Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
-        Node::st->insert(*s);
+        Node::st->remove(*findS);
     }
+
+    Symbol *s = new Symbol(this->id->GetName(), this, E_VarDecl);
+    //printf("Type Name in VarDecl %s is: %s\n",this->GetIdentifier()->GetName(), this->GetType()->GetTypeName());
+    Node::st->insert(*s);
+
+    VarDecl * v = dynamic_cast<VarDecl*>(this);
+
+    if (v->assignTo != NULL) {
+        bool *valid = new bool(true);
+        Type *t = v->assignTo->typeCheck(valid);
+
+        if (t == NULL) {
+            //ReportError::InvalidInitialization(this->id, this->type, new Type("void"));
+
+            *valid = false;
+        } else if (strcmp(this->type->GetTypeName(),t->GetTypeName())) {
+            if (*valid) 
+                ReportError::InvalidInitialization(this->id, this->type, t);
+
+            *valid = false;
+        } 
+    } 
+
 }     
+
+
+void FnDecl::Check() {
+    printf("FnDecl Check()\n");
+
+    //check if function exists in scope
+    Symbol *findS = Node::st->find(this->id->GetName(), new bool(true));
+    if(findS != NULL) {//symbol already exists
+        ReportError::DeclConflict(this, findS->decl);
+        Node::st->remove(*findS);
+
+    }
+
+    Symbol *s = new Symbol(this->id->GetName(), this, E_FunctionDecl);
+    Node::st->insert(*s);
+
+    //new scope
+    st->push();
+
+    if (this->formals->NumElements()>0) {
+        
+        for (int i = 0;i<this->formals->NumElements();i++) {
+            VarDecl * vDecl = this->formals->Nth(i);
+            vDecl->Check();
+        }
+    }
+
+    bool *toPush;
+    if (!strcmp(this->GetType()->GetTypeName(),"void"))
+        toPush = new bool(true);
+    else
+        toPush = new bool(false);
+
+    returns->push(this->GetType());
+    returned->push(toPush);
+
+    StmtBlock *sb = dynamic_cast<StmtBlock *>(this->body);
+    sb->Check(new bool(true)); 
+
+    if (!*(returned->top()))
+        ReportError::ReturnMissing(this);
+
+    returns->pop();
+    returned->pop();
+
+    st->pop();
+}
          
 Decl::Decl(Identifier *n) : Node(*n->GetLocation()) {
     Assert(n != NULL);

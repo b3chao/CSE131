@@ -10,6 +10,9 @@
 #include <stdio.h>  // printf
 
 SymbolTable *Node::st = new SymbolTable();
+int Node::loopNum = 0;
+std::stack<Type *> *Node::returns = new std::stack<Type *>();
+std::stack<bool *> *Node::returned = new std::stack<bool *>();
 
 Node::Node(yyltype loc) {
     location = new yyltype(loc);

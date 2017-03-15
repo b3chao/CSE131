@@ -53,6 +53,15 @@ void SymbolTable::remove(Symbol &sym) {
 	tables.back()->remove(sym);
 }
 
-Symbol *SymbolTable::find(const char *name) {
-	return tables.back()->find(name);
+Symbol *SymbolTable::find(const char *name, bool *currentScope) {
+	if (*currentScope) {
+		return tables.back()->find(name);
+	} else {
+		for (int i=tables.size()-1; i>=0; i--) {
+			Symbol *s = tables[i]->find(name);
+			if (s != NULL)
+				return s;
+		}
+		return NULL;
+	}
 }

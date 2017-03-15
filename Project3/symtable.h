@@ -74,7 +74,7 @@ class SymbolTable {
 
     void insert(Symbol &sym);
     void remove(Symbol &sym);
-    Symbol *find(const char *name);
+    Symbol *find(const char *name, bool *currentScope);
 
 };    
 

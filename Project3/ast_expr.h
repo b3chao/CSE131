@@ -29,6 +29,9 @@ class Expr : public Stmt
     friend std::ostream& operator<< (std::ostream& stream, Expr * expr) {
         return stream << expr->GetPrintNameForNode();
     }
+
+    virtual Type* typeCheck(bool *type);
+    void Check();
 };
 
 class ExprError : public Expr
@@ -56,6 +59,11 @@ class IntConstant : public Expr
     IntConstant(yyltype loc, int val);
     const char *GetPrintNameForNode() { return "IntConstant"; }
     void PrintChildren(int indentLevel);
+
+    Type *typeCheck(bool *valid) {
+      printf("IntConstant typeCheck\n");
+      return new Type("int");
+    }
 };
 
 class FloatConstant: public Expr 
@@ -67,6 +75,11 @@ class FloatConstant: public Expr
     FloatConstant(yyltype loc, double val);
     const char *GetPrintNameForNode() { return "FloatConstant"; }
     void PrintChildren(int indentLevel);
+
+    Type *typeCheck(bool *valid) {
+      printf("FloatConstant typeCheck\n");
+      return new Type("float");
+    }
 };
 
 class BoolConstant : public Expr 
@@ -78,6 +91,11 @@ class BoolConstant : public Expr
     BoolConstant(yyltype loc, bool val);
     const char *GetPrintNameForNode() { return "BoolConstant"; }
     void PrintChildren(int indentLevel);
+
+    Type *typeCheck(bool *valid) {
+      printf("BoolConstant typeCheck\n");
+      return new Type("bool");
+    }
 };
 
 class VarExpr : public Expr
@@ -90,6 +108,8 @@ class VarExpr : public Expr
     const char *GetPrintNameForNode() { return "VarExpr"; }
     void PrintChildren(int indentLevel);
     Identifier *GetIdentifier() {return id;}
+
+    Type *typeCheck(bool *valid);
 };
 
 class Operator : public Node 
@@ -116,6 +136,8 @@ class CompoundExpr : public Expr
     CompoundExpr(Operator *op, Expr *rhs);             // for unary
     CompoundExpr(Expr *lhs, Operator *op);             // for unary
     void PrintChildren(int indentLevel);
+
+    Type *typeCheck(bool *valid);
 };
 
 class ArithmeticExpr : public CompoundExpr 
@@ -124,6 +146,8 @@ class ArithmeticExpr : public CompoundExpr
     ArithmeticExpr(Expr *lhs, Operator *op, Expr *rhs) : CompoundExpr(lhs,op,rhs) {}
     ArithmeticExpr(Operator *op, Expr *rhs) : CompoundExpr(op,rhs) {}
     const char *GetPrintNameForNode() { return "ArithmeticExpr"; }
+
+    Type *typeCheck(bool *valid);
 };
 
 class RelationalExpr : public CompoundExpr 
@@ -131,6 +155,8 @@ class RelationalExpr : public CompoundExpr
   public:
     RelationalExpr(Expr *lhs, Operator *op, Expr *rhs) : CompoundExpr(lhs,op,rhs) {}
     const char *GetPrintNameForNode() { return "RelationalExpr"; }
+
+    Type *typeCheck(bool *valid);
 };
 
 class EqualityExpr : public CompoundExpr 
@@ -138,6 +164,8 @@ class EqualityExpr : public CompoundExpr
   public:
     EqualityExpr(Expr *lhs, Operator *op, Expr *rhs) : CompoundExpr(lhs,op,rhs) {}
     const char *GetPrintNameForNode() { return "EqualityExpr"; }
+
+    //Type *typeCheck(bool *valid) {printf("EqualityExpr\n"); return NULL;}
 };
 
 class LogicalExpr : public CompoundExpr 
@@ -146,6 +174,8 @@ class LogicalExpr : public CompoundExpr
     LogicalExpr(Expr *lhs, Operator *op, Expr *rhs) : CompoundExpr(lhs,op,rhs) {}
     LogicalExpr(Operator *op, Expr *rhs) : CompoundExpr(op,rhs) {}
     const char *GetPrintNameForNode() { return "LogicalExpr"; }
+
+    //Type *typeCheck(bool *valid) {printf("Logical Expr\n"); return NULL;}
 };
 
 class AssignExpr : public CompoundExpr 
@@ -153,6 +183,8 @@ class AssignExpr : public CompoundExpr
   public:
     AssignExpr(Expr *lhs, Operator *op, Expr *rhs) : CompoundExpr(lhs,op,rhs) {}
     const char *GetPrintNameForNode() { return "AssignExpr"; }
+
+    //Type *typeCheck(bool *valid) {printf("Assign Expr\n"); return NULL;}
 };
 
 class PostfixExpr : public CompoundExpr
@@ -161,6 +193,7 @@ class PostfixExpr : public CompoundExpr
     PostfixExpr(Expr *lhs, Operator *op) : CompoundExpr(lhs,op) {}
     const char *GetPrintNameForNode() { return "PostfixExpr"; }
 
+    Type *typeCheck(bool *valid); 
 };
 
 class ConditionalExpr : public Expr
@@ -171,6 +204,8 @@ class ConditionalExpr : public Expr
     ConditionalExpr(Expr *c, Expr *t, Expr *f);
     void PrintChildren(int indentLevel);
     const char *GetPrintNameForNode() { return "ConditionalExpr"; }
+
+    Type *typeCheck(bool *valid); 
 };
 
 class LValue : public Expr 
@@ -188,6 +223,8 @@ class ArrayAccess : public LValue
     ArrayAccess(yyltype loc, Expr *base, Expr *subscript);
     const char *GetPrintNameForNode() { return "ArrayAccess"; }
     void PrintChildren(int indentLevel);
+
+    Type *typeCheck(bool *valid);
 };
 
 /* Note that field access is used both for qualified names
@@ -205,6 +242,8 @@ class FieldAccess : public LValue
     FieldAccess(Expr *base, Identifier *field); //ok to pass NULL base
     const char *GetPrintNameForNode() { return "FieldAccess"; }
     void PrintChildren(int indentLevel);
+    Type *typeCheck(bool *valid);
+    Type * swizzleLength(Expr *base, Identifier *field, int len, bool *valid);
 };
 
 /* Like field access, call is used both for qualified base.field()
@@ -223,6 +262,7 @@ class Call : public Expr
     Call(yyltype loc, Expr *base, Identifier *field, List<Expr*> *args);
     const char *GetPrintNameForNode() { return "Call"; }
     void PrintChildren(int indentLevel);
+    Type *typeCheck(bool *valid);
 };
 
 class ActualsError : public Call
